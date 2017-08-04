@@ -1,7 +1,7 @@
 import React        from 'react';
 import connectField from 'uniforms/connectField';
 import {Component}  from 'react';
-
+import Kronos_ from 'react-kronos';
 import styles from '../lib/styles';
 import themes from '../lib/themes';
 
@@ -35,6 +35,46 @@ class ApplicationPreview extends Component {
         const props = {...this.props.value};
         props.schema = this._schema;
 
+        const kronosOptions = {
+          color: '#2ECC71',
+          font: 'Roboto',
+          moment: {
+            lang: 'fr',
+          },
+          format: {
+            hour: 'HH:mm',
+          }
+        };
+        const Kronos = props =>
+            <div>
+            <pre>{JSON.stringify({props}, null, 2)}</pre>
+            <Kronos_
+                date={ props.value }
+                options={kronosOptions}
+                format="DD/MM/YYYY"
+                placeholder={ props.value }
+                min={ new Date() }
+                returnAs="JS_DATE"
+            />
+            </div>
+            ;
+
+        const KronosField = connectField(Kronos, { ensureValue: false });
+
+        const determineComponentFromProps = props => {
+              console.log(props);
+              return KronosField;
+            };
+
+        const CustomAuto = props => {
+              // This way we don't care about unhandled cases - we use default
+              // AutoField as a fallback component.
+              const Component = determineComponentFromProps(props) || AutoField;
+              return (
+              <Component {...props} />
+          );
+        };
+
         return (
             <div>
                 {link}
@@ -42,7 +82,10 @@ class ApplicationPreview extends Component {
                 {this.props.errorMessage ? (
                     <span children={this.props.errorMessage} />
                 ) : (
-                    <Form key={this.props.value.schema} onChangeModel={this.onModel} {...props} />
+                    <Form key={this.props.value.schema} onChangeModel={this.onModel} {...props}>
+                        <KronosField
+                        name="date"/>
+                    </Form>
                 )}
 
                 {this.state.model !== undefined && <br />}
