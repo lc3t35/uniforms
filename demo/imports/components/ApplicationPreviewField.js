@@ -45,6 +45,7 @@ class ApplicationPreview extends Component {
             hour: 'HH:mm',
           }
         };
+
         const Kronos = props =>
             <div>
             <pre>{JSON.stringify({props}, null, 2)}</pre>
